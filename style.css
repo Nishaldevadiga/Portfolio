@@ -319,6 +319,19 @@ nav {
     font-size: 1.1rem;
     color: rgba(255, 255, 255, 0.8);
     line-height: 1.8;
+    max-width: 70ch;
+    margin: 0 auto;
+}
+
+.about-text p {
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.about-text p.lead {
+    font-size: 1.2rem;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.92);
 }
 
 .skills {

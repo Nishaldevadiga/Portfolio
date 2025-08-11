@@ -356,6 +356,31 @@ nav {
     font-size: 3rem;
 }
 
+/* Ensure the image area centers its contents */
+.about-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-image {
+    width: clamp(160px, 40vw, 280px);
+    height: auto;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 2px solid rgba(0, 112, 243, 0.3);
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 112, 243, 0.2);
+    margin: 0 auto;
+    display: block;
+}
+
+.profile-image:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 112, 243, 0.3);
+    border-color: #0070f3;
+}
+
 /* Projects Section */
 .projects {
     padding: 6rem 0;

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nishal Sukumar</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -98,6 +99,16 @@
             overflow: hidden;
         }
 
+        /* Three.js Canvas */
+        #three-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
         .hero .container {
             margin-left: auto;
             margin-right: auto;
@@ -110,8 +121,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff" stroke-width="0.1" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
-            opacity: 0.3;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 112, 243, 0.05) 50%, transparent 100%);
+            z-index: 1;
+            pointer-events: none;
         }
 
         /* Network Animation */
@@ -626,7 +638,7 @@
 
     <main>
         <section id="home" class="hero">
-            <div class="network-lines"></div>
+            <canvas id="three-canvas"></canvas>
             <div class="container">
                 <div class="hero-content">
                     <h1 class="hero-name">Nishal Sukumar, <span id="role-wrapper"><span id="role-inline"><span id="role-text"></span><span class="cursor">|</span></span></span></h1>
@@ -868,78 +880,362 @@
         }
 
         // Create network animation
-        function createNetworkAnimation() {
-            const networkContainer = document.querySelector('.network-lines');
+        function initThreeJS() {
+            const canvas = document.getElementById('three-canvas');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
             
-            function createHorizontalLine() {
-                const line = document.createElement('div');
-                line.className = 'network-line';
-                line.style.top = Math.random() * window.innerHeight + 'px';
-                line.style.width = Math.random() * 300 + 200 + 'px';
-                line.style.animationDelay = Math.random() * 8 + 's';
-                line.style.animationDuration = (Math.random() * 4 + 6) + 's';
-                networkContainer.appendChild(line);
+            // Scene setup
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0x000000, 0);
+            
+            camera.position.z = 4;
+            
+            // Load font for 3D text
+            const fontLoader = new THREE.FontLoader();
+            const textMeshes = [];
+            const roles = ['Full Stack Dev', 'AI Engineer', 'ML Engineer', 'Backend Dev', 'Frontend Dev'];
+            const roleColors = [0x0070f3, 0x00d4ff, 0x00ff88, 0xff0070, 0xffaa00];
+            
+            fontLoader.load('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/fonts/helvetiker_regular.typeface.json', function(font) {
+                roles.forEach((role, index) => {
+                    const textGeometry = new THREE.TextGeometry(role, {
+                        font: font,
+                        size: 0.6,
+                        depth: 0.1,
+                        curveSegments: 12,
+                        bevelEnabled: true,
+                        bevelThickness: 0.02,
+                        bevelSize: 0.02,
+                        bevelSegments: 5
+                    });
+                    
+                    textGeometry.center();
+                    
+                    const textMaterial = new THREE.MeshPhongMaterial({
+                        color: roleColors[index],
+                        emissive: roleColors[index],
+                        emissiveIntensity: 0.3,
+                        shininess: 100
+                    });
+                    
+                    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                    const angle = (index / roles.length) * Math.PI * 2;
+                    const radius = 3.5;
+                    
+                    textMesh.position.x = Math.cos(angle) * radius;
+                    textMesh.position.y = Math.sin(angle) * radius;
+                    textMesh.position.z = Math.cos(angle * 1.5) * 1.5;
+                    
+                    textMesh.rotation.x = Math.random() * Math.PI;
+                    textMesh.rotation.y = angle;
+                    
+                    textMesh.userData = {
+                        angle: angle,
+                        radius: radius,
+                        index: index,
+                        originalScale: 1
+                    };
+                    
+                    // Position off-screen to the right initially
+                    textMesh.position.set(4, -5, 0);
+                    
+                    scene.add(textMesh);
+                    textMeshes.push(textMesh);
+                });
+            });
+            
+            // Create main sphere
+            const sphereGeometry = new THREE.IcosahedronGeometry(1.5, 16);
+            const sphereMaterial = new THREE.MeshPhongMaterial({
+                color: 0x0070f3,
+                emissive: 0x003a80,
+                shininess: 100,
+                wireframe: false
+            });
+            
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            scene.add(sphere);
+            
+            // Create wireframe overlay
+            const wireframeGeometry = new THREE.IcosahedronGeometry(1.5, 16);
+            const wireframeMaterial = new THREE.MeshStandardMaterial({
+                color: 0x00d4ff,
+                emissive: 0x004466,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            
+            const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+            wireframe.position.z = 0.01;
+            scene.add(wireframe);
+            
+            // Rotating cube
+            const cubeGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+            const cubeMaterial = new THREE.MeshPhongMaterial({
+                color: 0x00d4ff,
+                emissive: 0x003355,
+                shininess: 80
+            });
+            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cube.position.x = -2.5;
+            cube.rotation.z = Math.PI / 4;
+            scene.add(cube);
+            
+            // Rotating torus
+            const torusGeometry = new THREE.TorusGeometry(0.6, 0.2, 16, 100);
+            const torusMaterial = new THREE.MeshPhongMaterial({
+                color: 0x00ff88,
+                emissive: 0x001144,
+                shininess: 60
+            });
+            const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+            torus.position.x = 2.5;
+            scene.add(torus);
+            
+            // Rotating octahedron
+            const octaGeometry = new THREE.OctahedronGeometry(0.7, 3);
+            const octaMaterial = new THREE.MeshPhongMaterial({
+                color: 0xff0070,
+                emissive: 0x440011,
+                shininess: 70
+            });
+            const octahedron = new THREE.Mesh(octaGeometry, octaMaterial);
+            octahedron.position.y = -2;
+            scene.add(octahedron);
+            
+            // Rotating dodecahedron
+            const dodecaGeometry = new THREE.DodecahedronGeometry(0.6, 0);
+            const dodecaMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffaa00,
+                emissive: 0x553300,
+                shininess: 75
+            });
+            const dodecahedron = new THREE.Mesh(dodecaGeometry, dodecaMaterial);
+            dodecahedron.position.y = 2;
+            scene.add(dodecahedron);
+            
+            // Add enhanced particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particleCount = 300;
+            const posArray = new Float32Array(particleCount * 3);
+            const colorArray = new Float32Array(particleCount * 3);
+            
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 12;
+                posArray[i + 1] = (Math.random() - 0.5) * 12;
+                posArray[i + 2] = (Math.random() - 0.5) * 12;
                 
-                // Remove line after animation
-                setTimeout(() => {
-                    if (line.parentNode) {
-                        line.parentNode.removeChild(line);
-                    }
-                }, 12000);
+                const hue = Math.random();
+                const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
+                colorArray[i] = color.r;
+                colorArray[i + 1] = color.g;
+                colorArray[i + 2] = color.b;
             }
             
-            function createVerticalLine() {
-                const line = document.createElement('div');
-                line.className = 'network-line-vertical';
-                line.style.left = Math.random() * window.innerWidth + 'px';
-                line.style.height = Math.random() * 300 + 200 + 'px';
-                line.style.animationDelay = Math.random() * 10 + 's';
-                line.style.animationDuration = (Math.random() * 4 + 8) + 's';
-                networkContainer.appendChild(line);
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.08,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.7,
+                sizeAttenuation: true
+            });
+            
+            const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+            
+            // Add floating rings
+            const ringGeometry = new THREE.TorusGeometry(3, 0.1, 8, 100);
+            const ringMaterial = new THREE.MeshPhongMaterial({
+                color: 0x0070f3,
+                emissive: 0x003a80,
+                transparent: true,
+                opacity: 0.2,
+                wireframe: true
+            });
+            
+            const ring1 = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring1.rotation.x = Math.PI / 3;
+            scene.add(ring1);
+            
+            const ring2 = new THREE.Mesh(ringGeometry, ringMaterial.clone());
+            ring2.rotation.y = Math.PI / 3;
+            ring2.material.color.setHex(0x00d4ff);
+            scene.add(ring2);
+            
+            const ring3 = new THREE.Mesh(ringGeometry, ringMaterial.clone());
+            ring3.rotation.z = Math.PI / 3;
+            ring3.material.color.setHex(0x00ff88);
+            scene.add(ring3);
+            
+            // Enhanced lighting
+            const light1 = new THREE.DirectionalLight(0x0070f3, 1.2);
+            light1.position.set(5, 5, 5);
+            scene.add(light1);
+            
+            const light2 = new THREE.DirectionalLight(0x00d4ff, 0.8);
+            light2.position.set(-5, -5, 5);
+            scene.add(light2);
+            
+            const light3 = new THREE.DirectionalLight(0x00ff88, 0.6);
+            light3.position.set(0, 5, -5);
+            scene.add(light3);
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            
+            // Point lights for extra glow
+            const pointLight1 = new THREE.PointLight(0x0070f3, 0.8, 10);
+            pointLight1.position.set(3, 3, 3);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0x00d4ff, 0.8, 10);
+            pointLight2.position.set(-3, -3, 3);
+            scene.add(pointLight2);
+            
+            // Mouse tracking
+            let mouseX = 0;
+            let mouseY = 0;
+            let scrollProgress = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+            
+            // Scroll detection for role highlighting - horizontal scroll with wheel
+            let horizontalScroll = 0;
+            
+            window.addEventListener('wheel', (e) => {
+                if (Math.abs(e.deltaY) > 0) {
+                    horizontalScroll += e.deltaY * 0.3;
+                    horizontalScroll = Math.max(0, horizontalScroll);
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Animation loop
+            let time = 0;
+            function animate() {
+                requestAnimationFrame(animate);
+                time += 0.016;
                 
-                // Remove line after animation
-                setTimeout(() => {
-                    if (line.parentNode) {
-                        line.parentNode.removeChild(line);
-                    }
-                }, 14000);
-            }
-            
-            function createDot() {
-                const dot = document.createElement('div');
-                dot.className = 'network-dot';
-                dot.style.left = Math.random() * window.innerWidth + 'px';
-                dot.style.top = Math.random() * window.innerHeight + 'px';
-                dot.style.animationDelay = Math.random() * 2 + 's';
-                networkContainer.appendChild(dot);
+                // Rotate main sphere
+                sphere.rotation.x += 0.001;
+                sphere.rotation.y += 0.005;
+                wireframe.rotation.x = sphere.rotation.x;
+                wireframe.rotation.y = sphere.rotation.y;
                 
-                // Remove dot after some time
-                setTimeout(() => {
-                    if (dot.parentNode) {
-                        dot.parentNode.removeChild(dot);
+                // Rotate other geometries
+                cube.rotation.x += 0.008;
+                cube.rotation.y += 0.008;
+                cube.rotation.z += 0.008;
+                
+                torus.rotation.x += 0.006;
+                torus.rotation.y += 0.008;
+                
+                octahedron.rotation.x += 0.007;
+                octahedron.rotation.z += 0.009;
+                
+                dodecahedron.rotation.x += 0.005;
+                dodecahedron.rotation.y += 0.007;
+                
+                // Rotate rings
+                ring1.rotation.x += 0.002;
+                ring2.rotation.y += 0.003;
+                ring3.rotation.z += 0.002;
+                
+                // Rotate particles
+                particles.rotation.x += 0.0002;
+                particles.rotation.y += 0.0003;
+                
+                // Animate 3D role text - horizontal scroll based
+                textMeshes.forEach((textMesh, index) => {
+                    const userData = textMesh.userData;
+                    const roleWidth = 200;
+                    
+                    // Calculate if this role should be visible
+                    const roleStartScroll = index * roleWidth;
+                    const roleEndScroll = roleStartScroll + roleWidth;
+                    
+                    // Position based on horizontal scroll
+                    const relativeScroll = horizontalScroll - roleStartScroll;
+                    const isCurrentRole = relativeScroll >= 0 && relativeScroll < roleWidth;
+                    const isNextRole = relativeScroll >= -roleWidth && relativeScroll < 0;
+                    
+                    // Start with basic positioning
+                    if (isCurrentRole) {
+                        // Currently visible role - show on the right
+                        const progress = relativeScroll / roleWidth; // 0 to 1
+                        textMesh.position.x = 2 + (1 - progress) * 0.5;
+                        textMesh.position.y = 0;
+                        textMesh.position.z = 0;
+                        textMesh.scale.set(1.8, 1.8, 1.8);
+                        textMesh.material.emissiveIntensity = 0.8;
+                    } else if (isNextRole) {
+                        // Incoming role - coming from the far right
+                        const progress = (relativeScroll + roleWidth) / roleWidth; // 0 to 1
+                        textMesh.position.x = 4 + (1 - progress) * 1.5;
+                        textMesh.position.y = 0;
+                        textMesh.position.z = 0;
+                        textMesh.scale.set(1 + progress * 0.8, 1 + progress * 0.8, 1 + progress * 0.8);
+                        textMesh.material.emissiveIntensity = 0.2 + progress * 0.3;
+                    } else if (relativeScroll < -roleWidth) {
+                        // Past roles - move to far left
+                        textMesh.position.x = -5;
+                        textMesh.position.y = -5;
+                        textMesh.position.z = 0;
+                        textMesh.scale.set(0.5, 0.5, 0.5);
+                        textMesh.material.emissiveIntensity = 0.1;
                     }
-                }, 6000);
+                    
+                    // Always look towards camera
+                    textMesh.lookAt(camera.position);
+                    
+                    // Add subtle floating animation
+                    textMesh.position.y += Math.sin(time * 2 + index) * 0.2;
+                });
+                
+                // Subtle pulsing effect for main sphere
+                const pulse = Math.sin(Date.now() * 0.001) * 0.2;
+                sphere.scale.set(1 + pulse * 0.05, 1 + pulse * 0.05, 1 + pulse * 0.05);
+                
+                // Mouse interaction
+                sphere.rotation.y += mouseX * 0.0001;
+                sphere.rotation.x += mouseY * 0.0001;
+                
+                // Camera sway
+                const cameraX = Math.sin(Date.now() * 0.0002) * 0.3;
+                const cameraY = Math.cos(Date.now() * 0.0002) * 0.2;
+                camera.position.x = cameraX;
+                camera.position.y = cameraY;
+                
+                renderer.render(scene, camera);
             }
             
-            // Create initial network elements
-            for (let i = 0; i < 3; i++) {
-                setTimeout(createHorizontalLine, i * 2000);
-                setTimeout(createVerticalLine, i * 2500);
-            }
+            animate();
             
-            for (let i = 0; i < 5; i++) {
-                setTimeout(createDot, i * 1000);
-            }
-            
-            // Continue creating network elements
-            setInterval(createHorizontalLine, 3000);
-            setInterval(createVerticalLine, 4000);
-            setInterval(createDot, 2000);
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                const newWidth = window.innerWidth;
+                const newHeight = window.innerHeight;
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newWidth, newHeight);
+            });
         }
 
-        // Initialize network animation when page loads
+        // Initialize Three.js and other features when page loads
         window.addEventListener('load', () => {
-            createNetworkAnimation();
+            initThreeJS();
  
             const roleEl = document.getElementById('role-text');
             const roles = ['Full Stack Dev', 'AI Engineer', 'ML Engineer','Backend Dev','Frontend Dev'];

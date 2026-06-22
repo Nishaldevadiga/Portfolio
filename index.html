@@ -3,1289 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nishal Sukumar</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #000;
-            color: #fff;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* Header */
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #0070f3, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: #0070f3;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(45deg, #0070f3, #00d4ff);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background: radial-gradient(circle at 50% 50%, rgba(0, 112, 243, 0.1), transparent 70%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Three.js Canvas */
-        #three-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        .hero .container {
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, transparent 0%, rgba(0, 112, 243, 0.05) 50%, transparent 100%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* Network Animation */
-        .network-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .network-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .network-line {
-            position: absolute;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            height: 1px;
-            opacity: 0;
-            animation: moveLine 8s linear infinite;
-        }
-
-        .network-line-vertical {
-            position: absolute;
-            background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            width: 1px;
-            opacity: 0;
-            animation: moveLineVertical 10s linear infinite;
-        }
-
-        .network-dot {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(0, 112, 243, 0.6);
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes moveLine {
-            0% {
-                left: -100%;
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                left: 100%;
-                opacity: 0;
-            }
-        }
-
-        @keyframes moveLineVertical {
-            0% {
-                top: -100%;
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                top: 100%;
-                opacity: 0;
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 0.4;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.5);
-            }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 800;
-            margin-bottom: 1.25rem;
-            background: linear-gradient(45deg, #fff, #0070f3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeInUp 1s ease-out;
-            line-height: 1;
-        }
-
-        .hero-name #role-text { font-size: 1em; font-weight: 700; }
-
-        #role-wrapper {
-            display: inline-block;
-            position: relative;
-            width: 0;
-            margin-left: 0.35em;
-            overflow: visible;
-            vertical-align: baseline;
-            height: 1em;
-            line-height: 1;
-        }
-
-        #role-inline {
-            position: absolute;
-            left: 0;
-            top: 0.19em !important;
-            white-space: nowrap;
-            background: linear-gradient(45deg, #fff, #0070f3) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            background-clip: text !important;
-            line-height: inherit !important;
-            font-size: 0.88em !important;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0 auto 2rem;
-            max-width: 600px;
-            animation: fadeInUp 1s ease-out 0.2s both;
-        }
-
-        .hero-role {
-            font-size: clamp(1.25rem, 4vw, 2rem);
-            font-weight: 700;
-            margin: 0 auto 1rem;
-            background: linear-gradient(45deg, #fff, #0070f3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-            animation: fadeInUp 1s ease-out 0.1s both;
-        }
-
-        .cursor {
-            display: inline-block;
-            margin-left: 6px;
-            width: 1ch;
-            animation: blink 1s steps(2, start) infinite;
-            line-height: inherit;
-        }
-
-        @keyframes blink {
-            to { opacity: 0; }
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: linear-gradient(45deg, #0070f3, #00d4ff);
-            color: #fff;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            animation: fadeInUp 1s ease-out 0.4s both;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 112, 243, 0.3);
-        }
-
-        /* About Section */
-        .about {
-            padding: 6rem 0;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .section-title {
-            font-size: 3rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 3rem;
-            background: linear-gradient(45deg, #fff, #0070f3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .about-text {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.8;
-        }
-
-        .skills {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .skill-tag {
-            background: rgba(0, 112, 243, 0.1);
-            border: 1px solid rgba(0, 112, 243, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .skill-tag:hover {
-            background: rgba(0, 112, 243, 0.2);
-            border-color: #0070f3;
-            transform: translateY(-2px);
-        }
-
-        /* Projects Section */
-        .projects {
-            padding: 6rem 0;
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .project-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(45deg, #0070f3, #00d4ff);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.3s ease;
-        }
-
-        .project-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .project-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(0, 112, 243, 0.3);
-            transform: translateY(-8px);
-        }
-
-        .project-card h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #fff;
-        }
-
-        .project-card p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-
-        .project-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .project-link {
-            color: #0070f3;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .project-link:hover {
-            color: #00d4ff;
-            text-decoration: underline;
-        }
-
-        /* Contact Section */
-        .contact {
-            padding: 6rem 0;
-            background: rgba(255, 255, 255, 0.02);
-            text-align: center;
-        }
-
-        .contact-form {
-            max-width: 600px;
-            margin: 0 auto;
-            display: grid;
-            gap: 1.5rem;
-            margin-top: 3rem;
-        }
-
-        .form-group {
-            display: grid;
-            gap: 0.5rem;
-        }
-
-        .form-group label {
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 1rem;
-            color: #fff;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #0070f3;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .submit-btn {
-            background: linear-gradient(45deg, #0070f3, #00d4ff);
-            color: #fff;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 112, 243, 0.3);
-        }
-
-        /* Footer */
-        footer {
-            padding: 2rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .about-grid {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-        }
-
-        /* Mobile menu */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-        }
-
-        .about-image-placeholder {
-            width: 100%;
-            height: 400px;
-            background: linear-gradient(45deg, rgba(0, 112, 243, 0.2), rgba(0, 212, 255, 0.2));
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-        }
-
-        /* Ensure profile image is smaller and centered */
-        .about-image {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .profile-image {
-            width: clamp(160px, 40vw, 280px);
-            height: auto;
-            object-fit: cover;
-            border-radius: 16px;
-            border: 2px solid rgba(0, 112, 243, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 112, 243, 0.2);
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
+    <title>Nishal Sukumar — Portfolio</title>
+    <meta name="description" content="Nishal Sukumar — Full Stack Java/Angular Developer & AI Engineer">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header">
-        <div class="container">
-            <nav>
-                <div class="logo">Nishal Sukumar</div>
+    <canvas id="bg-canvas"></canvas>
+    <div class="cursor-glow"></div>
+    <div class="progress-bar"><span id="progress-fill"></span></div>
+
+    <header id="header" class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#home" class="logo-wrapper">
+                    <span class="logo">NS</span>
+                </a>
                 <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#home" class="nav-link">Home</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="#skills" class="nav-link">Skills</a></li>
+                    <li><a href="#projects" class="nav-link">Projects</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
                 </ul>
-                <button class="mobile-menu-btn">☰</button>
-            </nav>
-        </div>
+                <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+            <ul class="nav-links-mobile" id="mobileNav">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <main>
-        <section id="home" class="hero">
-            <canvas id="three-canvas"></canvas>
-            <div class="container">
-                <div class="hero-content">
-                    <h1 class="hero-name">Nishal Sukumar, <span id="role-wrapper"><span id="role-inline"><span id="role-text"></span><span class="cursor">|</span></span></span></h1>
-                    <p>I create beautiful, functional, and user-centered digital experiences that solve real-world problems with clean code and modern technologies.</p>
-                    <a href="#projects" class="cta-button">View My Work</a>
-                </div>
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <p class="hero-eyebrow fade-in">&lt;/&gt; Full Stack Developer &amp; AI Engineer</p>
+            <h1 class="hero-title fade-in">
+                Nishal <span class="gradient-text">Sukumar</span>
+            </h1>
+            <p class="hero-role fade-in">
+                <span id="role-text"></span><span class="cursor">|</span>
+            </p>
+            <p class="hero-description fade-in">
+                I build scalable web applications and explore the frontier of large language
+                models, intelligent agents, and deep learning — turning research into real,
+                working products.
+            </p>
+            <div class="hero-cta fade-in">
+                <a href="#projects" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn btn-glass">Get in Touch</a>
             </div>
-        </section>
+        </div>
+        <a href="#about" class="scroll-indicator" aria-label="Scroll down">
+            <span class="mouse"><span class="wheel"></span></span>
+            <span class="scroll-label">Scroll</span>
+        </a>
+    </section>
 
-        <section id="about" class="about">
-            <div class="container">
-                <h2 class="section-title fade-in">About Me</h2>
-                <div class="about-grid">
-                    <div class="about-text fade-in">
-                        <p>I’m a full-stack Java developer with Angular expertise and 4+ years of experience building scalable web applications. I’m passionate about large language models, intelligent agents, and deep learning, with published AI research. Outside of coding, I explore emerging technologies, contribute to open source, and share knowledge through writing and collaboration.</p>
-
-
-
-                        <div class="skills">
-                            <div class="skill-tag">JavaScript</div>
-                            <div class="skill-tag">Backbone.js</div>
-                            <div class="skill-tag">Angular 2+</div>
-                            <div class="skill-tag">React</div>
-                            <div class="skill-tag">LLM</div>
-                            <div class="skill-tag">Java</div>
-                            <div class="skill-tag">Spring Boot</div>
-                            <div class="skill-tag">Node.js</div>
-                            <div class="skill-tag">Python</div>
-                            <div class="skill-tag">TypeScript</div>
-                            <div class="skill-tag">Machine Learning</div>
-                            <div class="skill-tag">Deep Learning</div>
-                            <div class="skill-tag">Computer Vision</div>
-                            <div class="skill-tag">RASA AI</div>
-                            <div class="skill-tag">MongoDB</div>
-                            <div class="skill-tag">PostgreSQL</div>
-                            <div class="skill-tag">MySQL</div>
-                            <div class="skill-tag">Docker</div>
-                            <div class="skill-tag">AWS</div>
-                        </div>
-                    </div>
-                    <div class="about-image fade-in">
-                        <img src="profile.jpg" alt="Nishal Sukumar" class="profile-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="about-image-placeholder" style="display: none;">👨‍💻</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="projects" class="projects">
-            <div class="container">
-                <h2 class="section-title fade-in">Featured Projects</h2>
-                <div class="projects-grid">
-                    <div class="project-card fade-in">
-                        <h3>Girls Inc. of Worcester</h3>
-                        <p>A static website built with React that highlights the mission and programs of Girls Inc. of Worcester, featuring responsive design, intuitive navigation, and an engaging user interface to raise awareness and connect with the community.</p>
-                        <div class="project-links">
-                            <a href="https://girls-inc-worcester.onrender.com/" class="project-link">Live Demo</a>
-                            <a href="#" class="project-link">GitHub</a>
-                        </div>
-                    </div>
-                    <div class="project-card fade-in">
-                        <h3>StudentSucceed</h3>
-                        <p>A community-driven platform for international students that offers verified housing, local events, essential resources, and peer support to ease the transition abroad.</p>
-                        <div class="project-links">
-                            <a href="https://studentsucceed.com/" class="project-link">Live Demo</a>
-                            <a href="#" class="project-link">GitHub</a>
-                        </div>
-                    </div>
-                    <div class="project-card fade-in">
-                        <h3>NeuroAura</h3>
-                        <p>NeuroAura is a mobile app built with Angular and Ionic that empowers people with paralysis by analyzing EEG brain waves to classify emotions, with future plans to detect physical needs and send urgent alerts.</p>
-                        <div class="project-links">
-                            <a href="https://github.com/Nishaldevadiga/NeuroUi_Ionic_angular" class="project-link">GitHub</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2 class="section-title fade-in">Get In Touch</h2>
-                <p class="fade-in" style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem; margin-bottom: 3rem;">
-                    I'm always open to discussing new opportunities and interesting projects.
-                </p>
-                <form class="contact-form fade-in">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
-                </form>
-            </div>
-        </section>
-    </main>
-
-    <footer>
+    <section id="about" class="about">
         <div class="container">
-            <p>&copy; 2025 Nishal Sukumar. All rights reserved.</p>
+            <h2 class="section-title fade-in">About Me</h2>
+            <div class="about-content">
+                <div class="about-visual fade-in">
+                    <div class="profile-frame">
+                        <div class="profile-ring"></div>
+                        <img src="profile.jpg" alt="Nishal Sukumar" class="profile-image"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="profile-placeholder" style="display:none;">👨‍💻</div>
+                    </div>
+                </div>
+                <div class="about-text glass-card fade-in">
+                    <p>I'm a full-stack Java developer with Angular expertise and 5+ years of
+                       experience building scalable web applications.</p>
+                    <p>I'm passionate about large language models, intelligent agents, and deep
+                       learning, with published AI research. Outside of coding, I explore emerging
+                       technologies, contribute to open source, and share knowledge through writing
+                       and collaboration.</p>
+                </div>
+            </div>
+            <div class="about-stats">
+                <div class="stat glass-card fade-in">
+                    <div class="stat-number" data-count="5">0</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+                <div class="stat glass-card fade-in">
+                    <div class="stat-number" data-count="10">0</div>
+                    <div class="stat-label">Projects Built</div>
+                </div>
+                <div class="stat glass-card fade-in">
+                    <div class="stat-number" data-count="1">0</div>
+                    <div class="stat-label">Published Research</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="skills-section">
+        <div class="container">
+            <h2 class="section-title fade-in">Skills &amp; Technologies</h2>
+            <div class="skills-grid">
+                <div class="skill-category glass-card fade-in">
+                    <h3>Frontend</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">TypeScript</span>
+                        <span class="skill-tag">Angular 2+</span>
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">Backbone.js</span>
+                    </div>
+                </div>
+                <div class="skill-category glass-card fade-in">
+                    <h3>Backend</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Java</span>
+                        <span class="skill-tag">Spring Boot</span>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">Python</span>
+                    </div>
+                </div>
+                <div class="skill-category glass-card fade-in">
+                    <h3>AI &amp; ML</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">LLM</span>
+                        <span class="skill-tag">Machine Learning</span>
+                        <span class="skill-tag">Deep Learning</span>
+                        <span class="skill-tag">Computer Vision</span>
+                        <span class="skill-tag">RASA AI</span>
+                    </div>
+                </div>
+                <div class="skill-category glass-card fade-in">
+                    <h3>Data &amp; Infra</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">MongoDB</span>
+                        <span class="skill-tag">PostgreSQL</span>
+                        <span class="skill-tag">MySQL</span>
+                        <span class="skill-tag">Docker</span>
+                        <span class="skill-tag">AWS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title fade-in">Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card glass-card fade-in tilt-card">
+                    <div class="project-header">
+                        <h3>Girls Inc. of Worcester</h3>
+                        <span class="project-badge">Live</span>
+                    </div>
+                    <p>A static website built with React that highlights the mission and programs
+                       of Girls Inc. of Worcester, featuring responsive design, intuitive
+                       navigation, and an engaging UI to raise awareness and connect with the
+                       community.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">CSS</span>
+                    </div>
+                    <a href="https://girls-inc-worcester.onrender.com/" target="_blank" rel="noopener" class="project-link">Live Demo →</a>
+                </div>
+
+                <div class="project-card glass-card fade-in tilt-card">
+                    <div class="project-header">
+                        <h3>StudentSucceed</h3>
+                        <span class="project-badge">Live</span>
+                    </div>
+                    <p>A community-driven platform for international students offering verified
+                       housing, local events, essential resources, and peer support to ease the
+                       transition abroad.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">MongoDB</span>
+                    </div>
+                    <a href="https://studentsucceed.com/" target="_blank" rel="noopener" class="project-link">Live Demo →</a>
+                </div>
+
+                <div class="project-card glass-card fade-in tilt-card">
+                    <div class="project-header">
+                        <h3>NeuroAura</h3>
+                        <span class="project-badge">GitHub</span>
+                    </div>
+                    <p>A mobile app built with Angular and Ionic that empowers people with
+                       paralysis by analyzing EEG brain waves to classify emotions, with future
+                       plans to detect physical needs and send urgent alerts.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Angular</span>
+                        <span class="tech-tag">Ionic</span>
+                        <span class="tech-tag">EEG</span>
+                    </div>
+                    <a href="https://github.com/Nishaldevadiga/NeuroUi_Ionic_angular" target="_blank" rel="noopener" class="project-link">View Code →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title fade-in">Let's Connect</h2>
+            <p class="contact-subtitle fade-in">I'm always open to discussing new opportunities and interesting projects.</p>
+            <div class="contact-wrapper">
+                <form class="contact-form glass-card fade-in" id="contactForm">
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <span class="form-underline"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <span class="form-underline"></span>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+                        <span class="form-underline"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+                <div class="contact-info glass-card fade-in">
+                    <h3>Get in Touch</h3>
+                    <p>I'm always interested in hearing about new projects and opportunities.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/Nishaldevadiga" target="_blank" rel="noopener" class="social-link">GitHub</a>
+                        <a href="#" class="social-link">LinkedIn</a>
+                        <a href="#" class="social-link">Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Nishal Sukumar. All rights reserved.</p>
         </div>
     </footer>
 
-    <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    const headerHeight = document.getElementById('header').offsetHeight;
-                    const targetPosition = target.offsetTop - headerHeight;
-                    
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-
-        // Header background opacity on scroll
-        window.addEventListener('scroll', () => {
-            const header = document.getElementById('header');
-            const scrolled = window.pageYOffset;
-            const rate = scrolled * -0.5;
-            
-            if (scrolled > 100) {
-                header.style.background = 'rgba(0, 0, 0, 0.95)';
-            } else {
-                header.style.background = 'rgba(0, 0, 0, 0.8)';
-            }
-        });
-
-        // Intersection Observer for fade-in animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        // Observe all fade-in elements
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Form submission
-        document.querySelector('.contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(this);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const message = formData.get('message');
-            
-            // Simple validation
-            if (!name || !email || !message) {
-                alert('Please fill in all fields');
-                return;
-            }
-            
-            // Simulate form submission
-            const submitBtn = this.querySelector('.submit-btn');
-            const originalText = submitBtn.textContent;
-            
-            submitBtn.textContent = 'Sending...';
-            submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                alert('Message sent successfully! I\'ll get back to you soon.');
-                this.reset();
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }, 1500);
-        });
-
-        // Add typing animation to hero title
-        function typeWriter(element, text, speed = 100) {
-            let i = 0;
-            element.textContent = '';
-            
-            function type() {
-                if (i < text.length) {
-                    element.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                }
-            }
-            
-            type();
-        }
-
-        // Type and delete loop for roles
-        function typeDeleteLoop(element, words, { typeSpeed = 80, deleteSpeed = 50, pause = 1000 } = {}) {
-            let wordIndex = 0;
-            let charIndex = 0;
-            let deleting = false;
-
-            function step() {
-                const current = words[wordIndex];
-                if (!deleting) {
-                    element.textContent = current.substring(0, charIndex + 1);
-                    charIndex++;
-                    if (charIndex === current.length) {
-                        deleting = true;
-                        setTimeout(step, pause);
-                        return;
-                    }
-                    setTimeout(step, typeSpeed);
-                } else {
-                    element.textContent = current.substring(0, charIndex - 1);
-                    charIndex--;
-                    if (charIndex === 0) {
-                        deleting = false;
-                        wordIndex = (wordIndex + 1) % words.length;
-                        setTimeout(step, 300);
-                        return;
-                    }
-                    setTimeout(step, deleteSpeed);
-                }
-            }
-
-            step();
-        }
-
-        // Create network animation
-        function initThreeJS() {
-            const canvas = document.getElementById('three-canvas');
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            
-            // Scene setup
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-            renderer.setSize(width, height);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setClearColor(0x000000, 0);
-            
-            camera.position.z = 4;
-            
-            // Load font for 3D text
-            const fontLoader = new THREE.FontLoader();
-            const textMeshes = [];
-            const roles = ['Full Stack Dev', 'AI Engineer', 'ML Engineer', 'Backend Dev', 'Frontend Dev'];
-            const roleColors = [0x0070f3, 0x00d4ff, 0x00ff88, 0xff0070, 0xffaa00];
-            
-            fontLoader.load('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/fonts/helvetiker_regular.typeface.json', function(font) {
-                roles.forEach((role, index) => {
-                    const textGeometry = new THREE.TextGeometry(role, {
-                        font: font,
-                        size: 0.6,
-                        depth: 0.1,
-                        curveSegments: 12,
-                        bevelEnabled: true,
-                        bevelThickness: 0.02,
-                        bevelSize: 0.02,
-                        bevelSegments: 5
-                    });
-                    
-                    textGeometry.center();
-                    
-                    const textMaterial = new THREE.MeshPhongMaterial({
-                        color: roleColors[index],
-                        emissive: roleColors[index],
-                        emissiveIntensity: 0.3,
-                        shininess: 100
-                    });
-                    
-                    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-                    const angle = (index / roles.length) * Math.PI * 2;
-                    const radius = 3.5;
-                    
-                    textMesh.position.x = Math.cos(angle) * radius;
-                    textMesh.position.y = Math.sin(angle) * radius;
-                    textMesh.position.z = Math.cos(angle * 1.5) * 1.5;
-                    
-                    textMesh.rotation.x = Math.random() * Math.PI;
-                    textMesh.rotation.y = angle;
-                    
-                    textMesh.userData = {
-                        angle: angle,
-                        radius: radius,
-                        index: index,
-                        originalScale: 1
-                    };
-                    
-                    // Position off-screen to the right initially
-                    textMesh.position.set(4, -5, 0);
-                    
-                    scene.add(textMesh);
-                    textMeshes.push(textMesh);
-                });
-            });
-            
-            // Create main sphere
-            const sphereGeometry = new THREE.IcosahedronGeometry(1.5, 16);
-            const sphereMaterial = new THREE.MeshPhongMaterial({
-                color: 0x0070f3,
-                emissive: 0x003a80,
-                shininess: 100,
-                wireframe: false
-            });
-            
-            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-            scene.add(sphere);
-            
-            // Create wireframe overlay
-            const wireframeGeometry = new THREE.IcosahedronGeometry(1.5, 16);
-            const wireframeMaterial = new THREE.MeshStandardMaterial({
-                color: 0x00d4ff,
-                emissive: 0x004466,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.3
-            });
-            
-            const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
-            wireframe.position.z = 0.01;
-            scene.add(wireframe);
-            
-            // Rotating cube
-            const cubeGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-            const cubeMaterial = new THREE.MeshPhongMaterial({
-                color: 0x00d4ff,
-                emissive: 0x003355,
-                shininess: 80
-            });
-            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-            cube.position.x = -2.5;
-            cube.rotation.z = Math.PI / 4;
-            scene.add(cube);
-            
-            // Rotating torus
-            const torusGeometry = new THREE.TorusGeometry(0.6, 0.2, 16, 100);
-            const torusMaterial = new THREE.MeshPhongMaterial({
-                color: 0x00ff88,
-                emissive: 0x001144,
-                shininess: 60
-            });
-            const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-            torus.position.x = 2.5;
-            scene.add(torus);
-            
-            // Rotating octahedron
-            const octaGeometry = new THREE.OctahedronGeometry(0.7, 3);
-            const octaMaterial = new THREE.MeshPhongMaterial({
-                color: 0xff0070,
-                emissive: 0x440011,
-                shininess: 70
-            });
-            const octahedron = new THREE.Mesh(octaGeometry, octaMaterial);
-            octahedron.position.y = -2;
-            scene.add(octahedron);
-            
-            // Rotating dodecahedron
-            const dodecaGeometry = new THREE.DodecahedronGeometry(0.6, 0);
-            const dodecaMaterial = new THREE.MeshPhongMaterial({
-                color: 0xffaa00,
-                emissive: 0x553300,
-                shininess: 75
-            });
-            const dodecahedron = new THREE.Mesh(dodecaGeometry, dodecaMaterial);
-            dodecahedron.position.y = 2;
-            scene.add(dodecahedron);
-            
-            // Add enhanced particles
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particleCount = 300;
-            const posArray = new Float32Array(particleCount * 3);
-            const colorArray = new Float32Array(particleCount * 3);
-            
-            for (let i = 0; i < particleCount * 3; i += 3) {
-                posArray[i] = (Math.random() - 0.5) * 12;
-                posArray[i + 1] = (Math.random() - 0.5) * 12;
-                posArray[i + 2] = (Math.random() - 0.5) * 12;
-                
-                const hue = Math.random();
-                const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
-                colorArray[i] = color.r;
-                colorArray[i + 1] = color.g;
-                colorArray[i + 2] = color.b;
-            }
-            
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
-            
-            const particlesMaterial = new THREE.PointsMaterial({
-                size: 0.08,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.7,
-                sizeAttenuation: true
-            });
-            
-            const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-            scene.add(particles);
-            
-            // Add floating rings
-            const ringGeometry = new THREE.TorusGeometry(3, 0.1, 8, 100);
-            const ringMaterial = new THREE.MeshPhongMaterial({
-                color: 0x0070f3,
-                emissive: 0x003a80,
-                transparent: true,
-                opacity: 0.2,
-                wireframe: true
-            });
-            
-            const ring1 = new THREE.Mesh(ringGeometry, ringMaterial);
-            ring1.rotation.x = Math.PI / 3;
-            scene.add(ring1);
-            
-            const ring2 = new THREE.Mesh(ringGeometry, ringMaterial.clone());
-            ring2.rotation.y = Math.PI / 3;
-            ring2.material.color.setHex(0x00d4ff);
-            scene.add(ring2);
-            
-            const ring3 = new THREE.Mesh(ringGeometry, ringMaterial.clone());
-            ring3.rotation.z = Math.PI / 3;
-            ring3.material.color.setHex(0x00ff88);
-            scene.add(ring3);
-            
-            // Enhanced lighting
-            const light1 = new THREE.DirectionalLight(0x0070f3, 1.2);
-            light1.position.set(5, 5, 5);
-            scene.add(light1);
-            
-            const light2 = new THREE.DirectionalLight(0x00d4ff, 0.8);
-            light2.position.set(-5, -5, 5);
-            scene.add(light2);
-            
-            const light3 = new THREE.DirectionalLight(0x00ff88, 0.6);
-            light3.position.set(0, 5, -5);
-            scene.add(light3);
-            
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-            scene.add(ambientLight);
-            
-            // Point lights for extra glow
-            const pointLight1 = new THREE.PointLight(0x0070f3, 0.8, 10);
-            pointLight1.position.set(3, 3, 3);
-            scene.add(pointLight1);
-            
-            const pointLight2 = new THREE.PointLight(0x00d4ff, 0.8, 10);
-            pointLight2.position.set(-3, -3, 3);
-            scene.add(pointLight2);
-            
-            // Mouse tracking
-            let mouseX = 0;
-            let mouseY = 0;
-            let scrollProgress = 0;
-            
-            document.addEventListener('mousemove', (e) => {
-                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-            });
-            
-            // Scroll detection for role highlighting - horizontal scroll with wheel
-            let horizontalScroll = 0;
-            
-            window.addEventListener('wheel', (e) => {
-                if (Math.abs(e.deltaY) > 0) {
-                    horizontalScroll += e.deltaY * 0.3;
-                    horizontalScroll = Math.max(0, horizontalScroll);
-                    e.preventDefault();
-                }
-            }, { passive: false });
-            
-            // Animation loop
-            let time = 0;
-            function animate() {
-                requestAnimationFrame(animate);
-                time += 0.016;
-                
-                // Rotate main sphere
-                sphere.rotation.x += 0.001;
-                sphere.rotation.y += 0.005;
-                wireframe.rotation.x = sphere.rotation.x;
-                wireframe.rotation.y = sphere.rotation.y;
-                
-                // Rotate other geometries
-                cube.rotation.x += 0.008;
-                cube.rotation.y += 0.008;
-                cube.rotation.z += 0.008;
-                
-                torus.rotation.x += 0.006;
-                torus.rotation.y += 0.008;
-                
-                octahedron.rotation.x += 0.007;
-                octahedron.rotation.z += 0.009;
-                
-                dodecahedron.rotation.x += 0.005;
-                dodecahedron.rotation.y += 0.007;
-                
-                // Rotate rings
-                ring1.rotation.x += 0.002;
-                ring2.rotation.y += 0.003;
-                ring3.rotation.z += 0.002;
-                
-                // Rotate particles
-                particles.rotation.x += 0.0002;
-                particles.rotation.y += 0.0003;
-                
-                // Animate 3D role text - horizontal scroll based
-                textMeshes.forEach((textMesh, index) => {
-                    const userData = textMesh.userData;
-                    const roleWidth = 200;
-                    
-                    // Calculate if this role should be visible
-                    const roleStartScroll = index * roleWidth;
-                    const roleEndScroll = roleStartScroll + roleWidth;
-                    
-                    // Position based on horizontal scroll
-                    const relativeScroll = horizontalScroll - roleStartScroll;
-                    const isCurrentRole = relativeScroll >= 0 && relativeScroll < roleWidth;
-                    const isNextRole = relativeScroll >= -roleWidth && relativeScroll < 0;
-                    
-                    // Start with basic positioning
-                    if (isCurrentRole) {
-                        // Currently visible role - show on the right
-                        const progress = relativeScroll / roleWidth; // 0 to 1
-                        textMesh.position.x = 2 + (1 - progress) * 0.5;
-                        textMesh.position.y = 0;
-                        textMesh.position.z = 0;
-                        textMesh.scale.set(1.8, 1.8, 1.8);
-                        textMesh.material.emissiveIntensity = 0.8;
-                    } else if (isNextRole) {
-                        // Incoming role - coming from the far right
-                        const progress = (relativeScroll + roleWidth) / roleWidth; // 0 to 1
-                        textMesh.position.x = 4 + (1 - progress) * 1.5;
-                        textMesh.position.y = 0;
-                        textMesh.position.z = 0;
-                        textMesh.scale.set(1 + progress * 0.8, 1 + progress * 0.8, 1 + progress * 0.8);
-                        textMesh.material.emissiveIntensity = 0.2 + progress * 0.3;
-                    } else if (relativeScroll < -roleWidth) {
-                        // Past roles - move to far left
-                        textMesh.position.x = -5;
-                        textMesh.position.y = -5;
-                        textMesh.position.z = 0;
-                        textMesh.scale.set(0.5, 0.5, 0.5);
-                        textMesh.material.emissiveIntensity = 0.1;
-                    }
-                    
-                    // Always look towards camera
-                    textMesh.lookAt(camera.position);
-                    
-                    // Add subtle floating animation
-                    textMesh.position.y += Math.sin(time * 2 + index) * 0.2;
-                });
-                
-                // Subtle pulsing effect for main sphere
-                const pulse = Math.sin(Date.now() * 0.001) * 0.2;
-                sphere.scale.set(1 + pulse * 0.05, 1 + pulse * 0.05, 1 + pulse * 0.05);
-                
-                // Mouse interaction
-                sphere.rotation.y += mouseX * 0.0001;
-                sphere.rotation.x += mouseY * 0.0001;
-                
-                // Camera sway
-                const cameraX = Math.sin(Date.now() * 0.0002) * 0.3;
-                const cameraY = Math.cos(Date.now() * 0.0002) * 0.2;
-                camera.position.x = cameraX;
-                camera.position.y = cameraY;
-                
-                renderer.render(scene, camera);
-            }
-            
-            animate();
-            
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                const newWidth = window.innerWidth;
-                const newHeight = window.innerHeight;
-                camera.aspect = newWidth / newHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(newWidth, newHeight);
-            });
-        }
-
-        // Initialize Three.js and other features when page loads
-        window.addEventListener('load', () => {
-            initThreeJS();
- 
-            const roleEl = document.getElementById('role-text');
-            const roles = ['Full Stack Dev', 'AI Engineer', 'ML Engineer','Backend Dev','Frontend Dev'];
- 
-            setTimeout(() => {
-                typeDeleteLoop(roleEl, roles, { typeSpeed: 80, deleteSpeed: 40, pause: 900 });
-            }, 500);
-        });
-
-        // Add parallax effect to hero section
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.querySelector('.hero');
-            const rate = scrolled * -0.3;
-            
-            hero.style.transform = `translateY(${rate}px)`;
-        });
-
-        // Add hover effects to skill tags
-        document.querySelectorAll('.skill-tag').forEach(tag => {
-            tag.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-3px) scale(1.05)';
-            });
-            
-            tag.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // Add glitch effect to logo on hover
-        const logo = document.querySelector('.logo');
-        logo.addEventListener('mouseenter', function() {
-            this.style.animation = 'none';
-            this.offsetHeight; // Trigger reflow
-            this.style.animation = 'glitch 0.3s ease-in-out';
-        });
-
-        // Add CSS for glitch animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes glitch {
-                0% { transform: translate(0); }
-                20% { transform: translate(-2px, 2px); }
-                40% { transform: translate(-2px, -2px); }
-                60% { transform: translate(2px, 2px); }
-                80% { transform: translate(2px, -2px); }
-                100% { transform: translate(0); }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

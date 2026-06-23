@@ -7,19 +7,30 @@
     <meta name="description" content="Nishal Sukumar — Full Stack Java/Angular Developer & AI Engineer">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;800;900&family=Barlow:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
-    <div class="cursor-glow"></div>
+    <div class="preloader" id="preloader">
+        <div class="preloader-top">
+            <span class="dot"></span>
+            <span class="preloader-brand">NS.dev</span>
+        </div>
+        <div class="preloader-bottom">
+            <span class="preloader-label">Loading</span>
+            <span class="preloader-count" id="preloaderCount">000</span>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><span class="toast-dot"></span><span id="toastText">Copied</span></div>
+
     <div class="progress-bar"><span id="progress-fill"></span></div>
 
     <header id="header" class="header">
         <nav class="navbar">
             <div class="nav-container">
                 <a href="#home" class="logo-wrapper">
-                    <span class="logo">NS</span>
+                    <span class="logo-dot"></span><span class="logo">NS.dev</span>
                 </a>
                 <ul class="nav-links">
                     <li><a href="#home" class="nav-link">Home</a></li>
@@ -44,9 +55,12 @@
 
     <section id="home" class="hero">
         <div class="hero-content">
-            <p class="hero-eyebrow fade-in">&lt;/&gt; Full Stack Developer &amp; AI Engineer</p>
-            <h1 class="hero-title fade-in">
-                Nishal <span class="gradient-text">Sukumar</span>
+            <p class="eyebrow fade-in"><span class="eyebrow-dot"></span>01 / Home</p>
+            <h1 class="hero-reveal" id="heroReveal">
+                <span class="hero-line">I care about</span>
+                <span class="hero-line em">how it performs</span>
+                <span class="hero-line">as much as</span>
+                <span class="hero-line">how it feels.</span>
             </h1>
             <p class="hero-role fade-in">
                 <span id="role-text"></span><span class="cursor">|</span>
@@ -58,7 +72,21 @@
             </p>
             <div class="hero-cta fade-in">
                 <a href="#projects" class="btn btn-primary">View My Work</a>
-                <a href="#contact" class="btn btn-glass">Get in Touch</a>
+                <a href="#contact" class="btn btn-outline">Get in Touch</a>
+            </div>
+            <div class="hero-stats fade-in">
+                <div class="hero-stat">
+                    <span class="hero-stat-value"><span class="stat-number" data-count="5">0</span>+</span>
+                    <span class="hero-stat-label">Years Shipping</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value"><span class="stat-number" data-count="10">0</span>+</span>
+                    <span class="hero-stat-label">Projects Built</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value"><span class="stat-number" data-count="1">0</span></span>
+                    <span class="hero-stat-label">Published Research</span>
+                </div>
             </div>
         </div>
         <a href="#about" class="scroll-indicator" aria-label="Scroll down">
@@ -68,18 +96,18 @@
     </section>
 
     <section id="about" class="about">
+        <span class="bg-ghost-text">About</span>
         <div class="container">
-            <h2 class="section-title fade-in">About Me</h2>
+            <p class="eyebrow fade-in"><span class="eyebrow-dot"></span>02 / About</p>
             <div class="about-content">
                 <div class="about-visual fade-in">
                     <div class="profile-frame">
-                        <div class="profile-ring"></div>
                         <img src="profile.jpg" alt="Nishal Sukumar" class="profile-image"
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <div class="profile-placeholder" style="display:none;">👨‍💻</div>
                     </div>
                 </div>
-                <div class="about-text glass-card fade-in">
+                <div class="about-text fade-in">
                     <p>I'm a full-stack Java developer with Angular expertise and 5+ years of
                        experience building scalable web applications.</p>
                     <p>I'm passionate about large language models, intelligent agents, and deep
@@ -88,28 +116,15 @@
                        and collaboration.</p>
                 </div>
             </div>
-            <div class="about-stats">
-                <div class="stat glass-card fade-in">
-                    <div class="stat-number" data-count="5">0</div>
-                    <div class="stat-label">Years Experience</div>
-                </div>
-                <div class="stat glass-card fade-in">
-                    <div class="stat-number" data-count="10">0</div>
-                    <div class="stat-label">Projects Built</div>
-                </div>
-                <div class="stat glass-card fade-in">
-                    <div class="stat-number" data-count="1">0</div>
-                    <div class="stat-label">Published Research</div>
-                </div>
-            </div>
         </div>
     </section>
 
     <section id="skills" class="skills-section">
         <div class="container">
-            <h2 class="section-title fade-in">Skills &amp; Technologies</h2>
+            <p class="eyebrow fade-in"><span class="eyebrow-dot"></span>03 / Skills</p>
+            <div class="section-line fade-in"></div>
             <div class="skills-grid">
-                <div class="skill-category glass-card fade-in">
+                <div class="skill-category fade-in">
                     <h3>Frontend</h3>
                     <div class="skill-tags">
                         <span class="skill-tag">JavaScript</span>
@@ -119,7 +134,7 @@
                         <span class="skill-tag">Backbone.js</span>
                     </div>
                 </div>
-                <div class="skill-category glass-card fade-in">
+                <div class="skill-category fade-in">
                     <h3>Backend</h3>
                     <div class="skill-tags">
                         <span class="skill-tag">Java</span>
@@ -128,7 +143,7 @@
                         <span class="skill-tag">Python</span>
                     </div>
                 </div>
-                <div class="skill-category glass-card fade-in">
+                <div class="skill-category fade-in">
                     <h3>AI &amp; ML</h3>
                     <div class="skill-tags">
                         <span class="skill-tag">LLM</span>
@@ -138,7 +153,7 @@
                         <span class="skill-tag">RASA AI</span>
                     </div>
                 </div>
-                <div class="skill-category glass-card fade-in">
+                <div class="skill-category fade-in">
                     <h3>Data &amp; Infra</h3>
                     <div class="skill-tags">
                         <span class="skill-tag">MongoDB</span>
@@ -154,32 +169,40 @@
 
     <section id="projects" class="projects">
         <div class="container">
-            <h2 class="section-title fade-in">Featured Projects</h2>
-            <div class="projects-grid">
-                <div class="project-card glass-card fade-in tilt-card">
-                    <div class="project-header">
+            <p class="eyebrow fade-in"><span class="eyebrow-dot"></span>04 / Projects</p>
+            <div class="ghost-heading fade-in">
+                <span class="ghost-word">Projects</span>
+                <span class="solid-word">Builds</span>
+                <span class="ghost-count">(03)</span>
+            </div>
+            <p class="section-tagline fade-in">Things I shipped, not just built.</p>
+
+            <div class="projects-list">
+                <article class="project-row fade-in">
+                    <div class="project-row-top">
                         <h3>Girls Inc. of Worcester</h3>
                         <span class="project-badge">Live</span>
                     </div>
-                    <p>A static website built with React that highlights the mission and programs
-                       of Girls Inc. of Worcester, featuring responsive design, intuitive
-                       navigation, and an engaging UI to raise awareness and connect with the
-                       community.</p>
+                    <p class="project-hook">A digital home for a nonprofit's mission.</p>
+                    <p class="project-desc">A static website built with React that highlights the mission and
+                       programs of Girls Inc. of Worcester, featuring responsive design, intuitive
+                       navigation, and an engaging UI to raise awareness and connect with the community.</p>
                     <div class="project-tech">
                         <span class="tech-tag">React</span>
                         <span class="tech-tag">JavaScript</span>
                         <span class="tech-tag">CSS</span>
                     </div>
                     <a href="https://girls-inc-worcester.onrender.com/" target="_blank" rel="noopener" class="project-link">Live Demo →</a>
-                </div>
+                </article>
 
-                <div class="project-card glass-card fade-in tilt-card">
-                    <div class="project-header">
+                <article class="project-row fade-in">
+                    <div class="project-row-top">
                         <h3>StudentSucceed</h3>
                         <span class="project-badge">Live</span>
                     </div>
-                    <p>A community-driven platform for international students offering verified
-                       housing, local events, essential resources, and peer support to ease the
+                    <p class="project-hook">Landing softly in a new country, together.</p>
+                    <p class="project-desc">A community-driven platform for international students offering
+                       verified housing, local events, essential resources, and peer support to ease the
                        transition abroad.</p>
                     <div class="project-tech">
                         <span class="tech-tag">React</span>
@@ -187,56 +210,47 @@
                         <span class="tech-tag">MongoDB</span>
                     </div>
                     <a href="https://studentsucceed.com/" target="_blank" rel="noopener" class="project-link">Live Demo →</a>
-                </div>
+                </article>
 
-                <div class="project-card glass-card fade-in tilt-card">
-                    <div class="project-header">
+                <article class="project-row fade-in">
+                    <div class="project-row-top">
                         <h3>NeuroAura</h3>
                         <span class="project-badge">GitHub</span>
                     </div>
-                    <p>A mobile app built with Angular and Ionic that empowers people with
-                       paralysis by analyzing EEG brain waves to classify emotions, with future
-                       plans to detect physical needs and send urgent alerts.</p>
+                    <p class="project-hook">Giving voice to silent signals.</p>
+                    <p class="project-desc">A mobile app built with Angular and Ionic that empowers people with
+                       paralysis by analyzing EEG brain waves to classify emotions, with future plans to
+                       detect physical needs and send urgent alerts.</p>
                     <div class="project-tech">
                         <span class="tech-tag">Angular</span>
                         <span class="tech-tag">Ionic</span>
                         <span class="tech-tag">EEG</span>
                     </div>
                     <a href="https://github.com/Nishaldevadiga/NeuroUi_Ionic_angular" target="_blank" rel="noopener" class="project-link">View Code →</a>
-                </div>
+                </article>
             </div>
         </div>
     </section>
 
     <section id="contact" class="contact">
         <div class="container">
-            <h2 class="section-title fade-in">Let's Connect</h2>
+            <p class="eyebrow fade-in"><span class="eyebrow-dot"></span>05 / Contact</p>
+            <h2 class="contact-title fade-in">Let's build<br>something that <span class="accent">matters</span>.</h2>
             <p class="contact-subtitle fade-in">I'm always open to discussing new opportunities and interesting projects.</p>
-            <div class="contact-wrapper">
-                <form class="contact-form glass-card fade-in" id="contactForm">
-                    <div class="form-group">
-                        <input type="text" name="name" placeholder="Your Name" required>
-                        <span class="form-underline"></span>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" name="email" placeholder="Your Email" required>
-                        <span class="form-underline"></span>
-                    </div>
-                    <div class="form-group">
-                        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
-                        <span class="form-underline"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
-                <div class="contact-info glass-card fade-in">
-                    <h3>Get in Touch</h3>
-                    <p>I'm always interested in hearing about new projects and opportunities.</p>
-                    <div class="social-links">
-                        <a href="https://github.com/Nishaldevadiga" target="_blank" rel="noopener" class="social-link">GitHub</a>
-                        <a href="#" class="social-link">LinkedIn</a>
-                        <a href="#" class="social-link">Email</a>
-                    </div>
-                </div>
+
+            <div class="contact-links fade-in">
+                <button class="contact-link" id="copyEmail" data-email="nishaldevadiga95@gmail.com">
+                    <span class="contact-link-label">Email</span>
+                    <span class="contact-link-value">nishaldevadiga95@gmail.com</span>
+                </button>
+                <a class="contact-link" href="https://github.com/Nishaldevadiga" target="_blank" rel="noopener">
+                    <span class="contact-link-label">GitHub</span>
+                    <span class="contact-link-value">github.com/Nishaldevadiga</span>
+                </a>
+                <a class="contact-link" href="#">
+                    <span class="contact-link-label">LinkedIn</span>
+                    <span class="contact-link-value">linkedin.com/in/nishalsukumar</span>
+                </a>
             </div>
         </div>
     </section>
@@ -247,7 +261,6 @@
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

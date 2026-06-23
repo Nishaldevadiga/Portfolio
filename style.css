@@ -326,6 +326,21 @@ body {
     max-width: 760px;
 }
 
+#hero-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 900px) {
+    #hero-canvas {
+        display: none;
+    }
+}
+
 .hero-reveal {
     display: flex;
     flex-direction: column;
